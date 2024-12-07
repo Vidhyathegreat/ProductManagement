@@ -1,0 +1,117 @@
+Share
+
+
+You said:
+package main
+
+import (
+	"fmt"
+	"strings"
+	"sync"
+	"strconv"
+)
+
+// Product represents the structure of the product data
+type Product struct {
+	ID                 int      json:"id"
+	UserID             int      json:"user_id"
+	ProductName        string   json:"product_name"
+	ProductDescription string   json:"product_description"
+	ProductImages      []string json:"product_images"
+	ProductPrice       float64  json:"product_price"
+}
+
+var (
+	products     []Product
+	productsLock sync.Mutex
+	nextID       int = 1
+)
+
+func main() {
+	// Simulate creating a product
+	testCreateProduct()
+
+	// Simulate getting a product by ID
+	testGetProduct(1)
+
+	// Simulate listing products with filters
+	testListProducts("1", 50, 150, "Example")
+}
+
+// createProduct simulates adding a product to the list
+func createProduct(product Product) {
+	productsLock.Lock()
+	defer productsLock.Unlock()
+
+	// Assign a unique ID to the new product
+	product.ID = nextID
+	nextID++
+	products = append(products, product)
+
+	fmt.Println("Product Created:", product)
+}
+
+// getProduct simulates retrieving a product by its ID
+func getProduct(id int) {
+	productsLock.Lock()
+	defer productsLock.Unlock()
+
+	for _, product := range products {
+		if product.ID == id {
+			fmt.Println("Product Retrieved:", product)
+			return
+		}
+	}
+	fmt.Println("Product not found with ID:", id)
+}
+
+// listProducts simulates listing products with filters
+func listProducts(userID string, priceMin, priceMax float64, nameFilter string) {
+	productsLock.Lock()
+	defer productsLock.Unlock()
+
+	var filtered []Product
+	for _, product := range products {
+		if strconv.Itoa(product.UserID) != userID {
+			continue
+		}
+		if priceMin > 0 && product.ProductPrice < priceMin {
+			continue
+		}
+		if priceMax > 0 && product.ProductPrice > priceMax {
+			continue
+		}
+		if nameFilter != "" && !strings.Contains(strings.ToLower(product.ProductName), strings.ToLower(nameFilter)) {
+			continue
+		}
+		filtered = append(filtered, product)
+	}
+
+	if len(filtered) == 0 {
+		fmt.Println("No products found with the given filters.")
+	} else {
+		fmt.Println("Filtered Products:", filtered)
+	}
+}
+
+// testCreateProduct simulates creating a product and adds it to the list
+func testCreateProduct() {
+	product := Product{
+		UserID:             1,
+		ProductName:        "Example Product",
+		ProductDescription: "An amazing product!",
+		ProductImages:      []string{"http://example.com/image1.jpg", "http://example.com/image2.jpg"},
+		ProductPrice:       99.99,
+	}
+	createProduct(product)
+}
+
+// testGetProduct simulates getting a product by its ID
+func testGetProduct(id int) {
+	getProduct(id)
+}
+
+// testListProducts simulates filtering products with filters
+func testListProducts(userID string, priceMin, priceMax float64, nameFilter string) {
+	listProducts(userID, priceMin, priceMax, nameFilter)
+} 
