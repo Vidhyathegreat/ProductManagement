@@ -1,0 +1,11 @@
+.
+├── main.go                   # Entry point of the application
+├── README.md                 # Documentation for the project
+├── go.mod                    # Module definition
+├── go.sum                    # Dependency management
+├── config/                   # Configuration-related files (placeholder)
+├── tests/                    # Unit and integration tests
+│   ├── create_test.go        # Tests for createProduct
+│   ├── retrieve_test.go      # Tests for getProduct
+│   ├── filter_test.go        # Tests for listProducts
+└── scripts/                  # Utility scripts (e.g., setup scripts)
